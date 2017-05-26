@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.my.mybatis.dao.UserMapper">
+	<select id="findUserByUsername" resultType="user" parameterType="string" >
+		select * from user where username like '%${value}%'
+	</select>
+	<select id="findQueryvoByUsername" resultType="user" parameterType="Qureyvo" >
+		select * from user where username like '%${user.username}%'
+	</select>
+	<select id="findByCount" resultType="int" >
+		select count(*) from user
+	</select>
+	<select id="findMapById" resultType="map" parameterType="int" >
+		select * from user where id=#{id}
+	</select>
+	<resultMap type="user" id="findNameByIdMapId">
+	<id column="id" property="id"/>
+	<result column="name" property="username"/>
+	</resultMap>
+	<select id="findNameById" resultMap="findNameByIdMapId" parameterType="int" >
+		select id,username name,sex from user where id=#{id}
+	</select>
+	<resultMap type="user" id="finduserandorder">
+	<id column="id" property="id"/>	
+	<result column="username" property="username"/>
+	<collection property="orders" ofType="cn.my.mybatis.domain.Orders">
+		<id column="oid" property="id"/>
+		<result column="number" property="number"/>
+	</collection>
+	</resultMap>
+	<select id="finduserandorders" resultMap="finduserandorder"  >
+		select u.id,u.username,o.id,o.number from user u left join orders o on u.oid=o.id
+	</select>
+	<sql id="updateWhere">
+	<where>
+	<if test="id!=0">
+	and id=#{id}
+	</if>
+	<if test="sex!=null">
+	and sex=#{sex}
+	</if>
+	<if test="sex!=null">
+	
+	<foreach collection="ids" open="and id in(" close=")" separator="," item="id">
+	#{id}
+	</foreach>
+	</if>
+	</where>
+	</sql>
+	<update id="updateUser" parameterType="user">
+	
+	update user 
+	<set>
+	<if test="username!=null">
+	username="小凡",
+	</if>
+	<if test="sex!=null">
+	sex="1",
+	</if>
+	
+	</set>
+	<include refid="updateWhere"/>
+	</update>
+</mapper>
